@@ -16,14 +16,6 @@ module cdc #(
   output logic valid_d
 );
 
-  // Insert internal signal declarations
-
-  // Insert source handshake logic
-
-  // Instantiate source syncronizer module
-
-  // Insert destination handshake logic
-
-  // Instantiate destination syncronizer module
+// Insert CDC logic
 
 endmodule
