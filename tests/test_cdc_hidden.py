@@ -4,8 +4,8 @@ from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, Timer
 
 # Global knobs
-MAX_SRC_CYCLES = 20000
-MAX_DST_CYCLES = 20000
+MAX_SRC_CYCLES = 20000000
+MAX_DST_CYCLES = 20000000
 
 random.seed(1234)
 
@@ -326,9 +326,6 @@ async def test6_random_equal(dut):
     await dst
     await src
 
-    await Timer(100, units="ns")
-    await apply_reset(dut)
-
     assert expected == received
 
 @cocotb.test()
@@ -340,7 +337,7 @@ async def test6_random_src_faster(dut):
 
     await apply_reset(dut)
 
-    NUM = 100
+    NUM = 10000
     expected = []
     received = []
 
@@ -354,11 +351,14 @@ async def test6_random_src_faster(dut):
         ready_mode="random", random_prob=0.5
     ))
 
+    # Ensure reset doesn't affect tb model
+    while len(expected) > len(received):
+        await RisingEdge(dut.clk_s)
+        
+    await apply_reset(dut)
+
     await dst
     await src
-
-    await Timer(100, units="ns")
-    await apply_reset(dut)
 
     assert expected == received
 
@@ -371,7 +371,7 @@ async def test6_random_dst_faster(dut):
 
     await apply_reset(dut)
 
-    NUM = 100
+    NUM = 10000
     expected = []
     received = []
 
@@ -385,7 +385,10 @@ async def test6_random_dst_faster(dut):
         ready_mode="random", random_prob=0.5
     ))
 
-    await Timer(100, units="ns")
+    # Ensure reset doesn't affect tb model
+    while len(expected) > len(received):
+      await RisingEdge(dut.clk_s)
+    
     await apply_reset(dut)
 
     await dst
