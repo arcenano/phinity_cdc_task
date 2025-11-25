@@ -544,15 +544,15 @@ def test_cdc_hidden_runner():
     sim = os.getenv("SIM", "icarus")
     proj_path = Path(__file__).resolve().parent.parent
 
-    sources = [proj_path / "sources/top.sv", proj_path / "sources/cdc.sv",proj_path / "sources/priority_arbiter.sv",proj_path / "sources/sync_bit.sv" ]
+    sources = [proj_path / "sources/cdc_arbiter_top.sv", proj_path / "sources/cdc.sv",proj_path / "sources/priority_arbiter.sv",proj_path / "sources/sync_bit.sv" ]
 
     runner = get_runner(sim)
     runner.build(
         sources=sources,
-        hdl_toplevel="top",
+        hdl_toplevel="cdc_arbiter_top",
         always=True,
     )
     runner.test(
-        hdl_toplevel="top",
+        hdl_toplevel="cdc_arbiter_top",
         test_module="test_cdc_hidden",  # this filename (without .py)
     )
