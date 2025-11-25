@@ -12,7 +12,7 @@ Real systems often need to move data from multiple independent sources into a si
 
 ## Files
 
-- `top.sv`: N-channel CDC wrapper  
+- `cdc_arbiter_top.sv`: N-channel CDC and arbiter wrapper
 - `priority_arbiter.sv`: destination-domain round-robin arbiter  
 - `cdc.sv`: single-channel ready/valid clock-domain-crossing bridge  
 - `sync_bit.sv`: single bit X-stage synchronizer 
@@ -62,9 +62,11 @@ A transfer occurs on a rising edge of `clk_d` when both valid_d and ready_d are 
 
 ## Parameters
 
-The widths of `data_in` and `data_out` are determined by the parameter `WIDTH`.
+The widths of `data_s` and `data_out` are determined by the parameter `WIDTH`.
 
 The `DELAY` specifies the number of stages in the synchronization pipeline.
+
+The `N` specifies the number of CDCs.
 
 ## Reset Requirements
 
