@@ -27,5 +27,6 @@ module cdc_arbiter_top #(
   // Instantiate CDC modules
 
   // Instantiate priority arbiter
+  // Instance (not module) must be called u_arb
 
 endmodule
