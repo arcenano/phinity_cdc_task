@@ -21,7 +21,7 @@ Real systems often need to move data from multiple independent sources into a si
 
 The **Top module** instantiates N=5 CDC modules and a priority arbiter. 
 
-The **Priority Arbiter** handles transactions between all CDC modules and the external interface. It turns this N channel stream into a single channel. Outgoing ready signals to the CDCs should only be asserted for one cycle. The arbiter can hold one word at a time. 
+The **Priority Arbiter** handles transactions between all CDC modules and the external interface. It turns this N channel stream into a single channel. Outgoing ready signals to the CDCs should only be asserted for one cycle. The arbiter is not required to check all channels every cycle, it only asserts ready for the next channel. The arbiter can hold one word at a time. 
 
 The **Clock Domain Crossing (CDC)** module safely transfers data words from a **source clock domain** to a **destination clock domain** using a standard **ready/valid streaming protocol** on each side.The CDC can hold one word at a time. 
 
@@ -34,6 +34,7 @@ The design must support:
 - **Single-word in-flight buffering:**  the module stores at most one word internally at a time.
 - **Clean behavior across resets:** including independent resets for each clock domain.
 - **Arbiter Round Robin:** completed in ascending order. 
+- **Arbiter Latency:** the cycle after a downstream transfer is completed, ready must be asserted on the next lane (no latency)
 
 ## Interfaces Summary
 

@@ -178,6 +178,49 @@ async def dst_driver(
     dut.ready_in.value = 0
     dut._log.info(f"[DST] DONE: received {count} transactions")
 
+async def check_arbiter_ready_after_transfer(dut, num_expected: int):
+    """
+    Check the arbiter property:
+
+    If a downstream transfer completes on this clk_d cycle
+    (valid_out && ready_in && !reset_d),
+    then on the *next* clk_d cycle, at least one bit of ready_out must be 1.
+    """
+    transfers_seen = 0
+    last_cycle_had_transfer = False
+    cycle = 0
+
+    while transfers_seen < num_expected:
+        await RisingEdge(dut.clk_d)
+        cycle += 1
+
+        curr_ready_out = int(dut.u_arb.ready_out.value)
+        curr_valid_out = int(dut.valid_out.value)
+        curr_ready_in = int(dut.ready_in.value)
+        curr_reset_d  = int(dut.reset_d.value)
+
+        # If previous cycle had a transfer, this cycle must assert some ready_out
+        if last_cycle_had_transfer:
+            if curr_ready_out == 0:
+                raise AssertionError(
+                    f"Arbiter violation at dst cycle {cycle}: "
+                    f"previous cycle had (valid_out && ready_in), "
+                    f"but ready_out == 0 this cycle"
+                )
+
+        # Detect transfer on *this* cycle
+        if curr_valid_out and curr_ready_in and not curr_reset_d:
+            transfers_seen += 1
+            last_cycle_had_transfer = True
+        else:
+            last_cycle_had_transfer = False
+
+    dut._log.info(
+        "[ARB] check_arbiter_ready_after_transfer: "
+        f"passed for {num_expected} downstream transfers"
+    )
+
+
 @cocotb.test()
 async def test1_always_valid_always_ready(dut):
     dut._log.info("TEST 1: valid always high, ready always high")
@@ -462,8 +505,12 @@ async def test7_arbiter_round_robin(dut):
         )
     )
 
-    # Multi Channel Source Driver
+    # Verify latency
+    arb_check = cocotb.start_soon(
+      check_arbiter_ready_after_transfer(dut, num_expected=N)
+    )
 
+    # == Multi Channel Source Driver ==
     # Clear source-side signals
     dut.valid_s.value = 0
     dut.data_s.value = 0
