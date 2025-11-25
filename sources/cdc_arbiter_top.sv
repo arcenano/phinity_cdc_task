@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module top #(
+module cdc_arbiter_top #(
   parameter int N     = 5,
   parameter int WIDTH = 8,
   parameter int DELAY = 2
