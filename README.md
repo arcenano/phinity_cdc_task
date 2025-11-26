@@ -61,8 +61,8 @@ Tests are evaluated by keeping track of sent words and comparing them to receive
   - Each source channel i sends exactly one word with value i.
   - All valids are asserted together, and test waits until each channel handshakes.
   - Destination applies backpressure deterministically, for a given number of cycles at a time (toggleN).
-  - Verify that outputs are a cyclic rotation of [0,1,2,...,N-1]. (order is mantained).
-  - Verify that ready is asserted with no latency after a downstream handshake.
+  - Verify that outputs are a cyclic rotation of [0,1,2,...,N-1]. (order is maintained).
+  - Verify that some ready_out is asserted with no latency after a downstream handshake.
 
 ## Solution
 
@@ -100,7 +100,7 @@ received      = [0, 2, 4, 1, 3]
 This test ensures that the data transfers from the CDCs to the arbiter happen in order.
 Data was scrambled, so the transfers didn't happen in order. Data can be cyclically shifted but not scrambled.
 
-### 2. **Arbiter bubbles  (Test 7)**
+### 2. **Arbiter Latency  (Test 7)**
 The testbench detected cycles where:
 
 - `valid_out && ready_in` (downstream accepted a word),
@@ -123,6 +123,6 @@ The failures come from two tightly related RTL mistakes in the arbiter:
 
     if (!data_valid) begin ready_out[current_channel] = 1'b1; end
 
-    Depends on the data_valid output, it should also depend on ready in. Otherwise, if a transfer happens this cycle, we won't have a ready on the next cycle. This is the "bubble" the testbench complains about. 
+    Depends only on the data_valid output, it should also depend on ready_in. Otherwise, if a transfer happens this cycle, we won't have a ready on the next cycle. This is what breaks the latency requirement. 
 
 The model wrote logic inconsistent with the specification. 
