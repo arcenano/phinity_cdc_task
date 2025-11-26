@@ -28,7 +28,7 @@ https://www.hud.ai/jobs/ef0d191f-3903-45fe-bbd6-3a0e31d20ae2
 
 Tests 4,6,7 are where most of the verification happens, the rest are very useful for debugging. 
 
-Tests are evaluated by keeping track of send words and comparing them to received words. 
+Tests are evaluated by keeping track of sent words and comparing them to received words. 
 
 ### Test 1.  Same clocks, single channel simple.
   - Valid always high  on a single channel and ready always high.
